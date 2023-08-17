@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title> Home | Shooting Game </title>
+  <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+  <script src="https://unpkg.com/aframe-environment-component@1.1.0/dist/aframe-environment-component.min.js"></script>
+
+  <script src="./index.html"></script>
+  <script src="./survival.html"></script>
+  
+  <style>
+    body {
+      background-image: url('./models/bg-img.png');
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      height: 40vh;
+      margin: 0;
+    }
+    #buttonContainer {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    #popupContainer {  display: none; align-items: center; background-color: white;  }
+    #navigateButton {  padding: 10px 20px;  font-size: 28px;  }
+    #ctrl {  padding: 10px 20px;  font-size: 28px; margin-top: 30px; }
+    #survival {  padding: 10px 20px;  font-size: 28px; margin-top: 30px; }
+    #txt { font-size: 20px;}
+</style>
+
+</head>
+<body>
+
+  <div id="buttonContainer">
+    <button id="navigateButton"> Start </button>
+    <button id="ctrl"> Controls </button>
+    <button id="survival"> Survival </button>
+  </div>
+
+  <div id="popupContainer">
+    <span id="closeButton">&times;</span>
+    <p id="txt"> Press Arrow Keys to Move the Player. </p>
+    <p id="txt"> Uze 'z' to Shoot the Enemies. </p>
+  </div>
+
+  <script>
+    var button = document.getElementById("navigateButton");
+    button.addEventListener("click", function() {
+      window.location.href = "index.html"; 
+    });
+
+    var popupContainer = document.getElementById("popupContainer");
+    var closeButton = document.getElementById("closeButton");
+    var ctrl = document.getElementById('ctrl');
+    ctrl.addEventListener("click", function() {
+      popupContainer.style.display = "block";
+      buttonContainer.style.display = "none";
+    });
+
+    closeButton.addEventListener("click", function() {
+      popupContainer.style.display = "none";
+      buttonContainer.style.display = "flex";
+    });
+
+    var survivalButton = document.getElementById("survival");
+    survivalButton.addEventListener("click", function() {
+      window.location.href = "survival.html";
+    })
+  </script>
+</body>
+</html>

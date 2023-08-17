@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title> Survival | Shooting Game </title>
+  <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/n5ro/aframe-physics-system@v4.0.1/dist/aframe-physics-system.min.js"></script>
+  <script src="https://unpkg.com/aframe-environment-component@1.1.0/dist/aframe-environment-component.min.js"></script>
+  <script src="https://recast-api.donmccurdy.com/aframe-inspector-plugin-recast.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.min.js"></script>
+
+  <!--Local Scripts-->  
+  <script src="./shoot.js"></script>
+  <script src="./gameObjects.js"></script>
+  <script src="./playerMovement.js"></script>
+  <script src="./enemies.js"></script>
+  <script src="./main.html"></script>
+
+</head>
+
+<body>
+  <a-scene id="scene" inspector-plugin-recast>
+
+    <!--Assets-->
+    <a-assets>
+      <a-asset-item id="shooter" src="./models/shooter/gun.gltf"></a-asset-item>
+      <a-asset-item id="zombie" src="./models/enemy/zombie.gltf"></a-asset-item>
+
+      <audio id="shoot" src="./sounds/shoot.mp3"></audio>
+      <audio id="footstep" src="./sounds/footStep.mp3"></audio>
+
+    </a-assets>
+
+    <!--A-Frame Environment-->
+    <a-entity id="environment" environment="preset: egypt; skyType:gradient; lighting:point">
+    </a-entity>
+
+    <!--Sounds-->
+    <a-entity id="sound1" sound="src: #shoot; poolSize:2; autoplay: false; volume: 1;loop:false"></a-entity>
+    <a-entity id="sound2" sound="src: #footstep; poolSize:2;autoplay: false; volume: 4;loop:false"></a-entity>
+
+    <!--Light-->
+    <a-entity light="type: ambient; color: white; intensity:0.5"></a-entity>
+    <a-entity light="type: directional; color: #EEE; intensity: 1" position="-1 1 0"></a-entity>
+
+    <a-entity id="camera-rig" movement-controls="speed: 0.2; constrainToNavMesh: true" position="0 1 2">
+      <!--Camera and Cursor-->
+      <a-entity id="camera" camera position="0 1.6 0" look-controls="pointerLockEnabled: false">
+        <a-entity id="weapon" gltf-model="#shooter" 
+          position="0 -4.4 3" rotation="0 180 0" scale="0.35 1 1"
+          body="type: static; mass: 5; shape: none;" 
+          shape="shape: sphere; radius: 5; offset: 0 3 0;"
+          player-movement>
+        </a-entity>
+        <a-cursor></a-cursor>
+
+       <!-- <a-entity geometry="primitive: plane; width: 0.5; height: 0.2" material="color: white" position="-3.2 2.4 -3">
+          <a-text value="Back" align="center" position="0 0 0.01" color="black" scale="1 1 1"></a-text>
+        </a-entity> -->
+
+        <a-entity id="tanktargets" position="7 5 -7.1" text="font: mozillavr;width:10; height: 5; value: Shoot Zombies">
+          <a-entity id="countTank" position="3 0 0" text="font: mozillavr; width:10; height: 5; value: : 5"></a-entity>
+        </a-entity>
+
+        <a-entity id="playerLife" position="-2 5 -7.16344"
+          text="font: mozillavr; width:10; height: 5;value: Player Life:">
+          <a-entity id="countLife" position="3 0 0" text="font: mozillavr; width:10; height: 5; value: 5"></a-entity>
+        </a-entity>
+
+        <a-entity id="over" position="1 1 -3"
+          text="font: mozillavr; width:5; height: 5; value: Better Luck Next Time :(" visible="false">
+        </a-entity>
+
+        <a-entity id="completed" position="1.5 1 -3" text="font: mozillavr; width:5; height: 5; value: Level Completed :)" visible="false"></a-entity>
+
+        <!-- Button -->
+        <a-plane id="actionButton" width="0.65" height="0.4" position="-7.35 5.08 -6.6" color="white" cursor-listener></a-plane>
+        <a-text value="Exit" position="-7.47 5 -6.5" color="black" cursor-listener></a-text>
+
+        <!-- Message -->
+        <a-entity id="message" position="0 2.5 0" scale="5 5 5" visible="false">
+          <a-plane position="0 1.5 -3" width="3" height="1.5" color="white" opacity="0.9"></a-plane>
+          <a-text position="-1 1.75 -2.9" value="Do you want to quit the game ?" color="black" width="3"></a-text>
+          <a-entity position="0 1 -2.8" scale="1 1 1">
+            <a-plane id="continueButton" position="0.6 0 0.1" width="1.2" height="0.5" color="#44D95E" cursor-listener></a-plane>
+            <a-text value="Main menu" position="0.05 0 0.1" color="white" cursor-listener></a-text>
+            <a-plane id="cancelButton" position="-0.6 0 0.1" width="1" height="0.5" color="white" cursor-listener></a-plane>
+            <a-text value="Cancel" position="-0.95 0 0.1" color="black" cursor-listener></a-text>
+          </a-entity>
+        </a-entity>
+
+        <!-- Cursor -->
+        <a-entity id="cursor" cursor="rayOrigin: mouse; fuse: false;"></a-entity>
+
+      </a-entity>
+    </a-entity>
+
+
+    <!--Bullets-->
+    <a-entity bullets></a-entity>
+
+    <!--Game Objects-->
+    <a-entity boxes></a-entity>
+    <a-entity enemies></a-entity>
+
+    <!--Ground-->
+    <a-plane id="ground" repeat="5 5" position="0 1 0" rotation="-90 0 0" height="200" width="200" color="#FBF2D4"
+      static-body visible="false">
+    </a-plane>
+
+    <!--Enemy-->
+    <a-entity class="enemy" id="enemy1" rotation="0 90 0" gltf-model="#zombie" position="-10 0 -15"
+      scale="0.015 0.015 0.015" animation-mixer static-body
+      animation="property: position; to: 10 0 -15; dur: 20000; easing: linear; loop: true; dir:alternate">
+    </a-entity>
+
+  </a-scene>
+
+  </a-scene>
+  <script>
+    AFRAME.registerComponent('cursor-listener', {
+      init: function () {
+        this.el.addEventListener('click', () => {
+          if (this.el.id === 'actionButton') {
+            document.querySelector('#message').setAttribute('visible', 'true');
+          } else if (this.el.id === 'continueButton') {
+            window.location.href = 'main.html';
+          } else if (this.el.id === 'cancelButton') {
+            document.querySelector('#message').setAttribute('visible', 'false');
+          }
+        });
+      }
+    });
+  </script>
+  <script>
+    AFRAME.registerComponent('enemie', {
+      init: function () {
+        const scene = document.querySelector('a-scene');
+        const model = document.querySelector('#zombie');
+
+        model.setAttribute('scale', { x: 0.75, y: 0.75, z: 0.75})
+
+        for (let i = 0; i < 10; i++) { // Adjust the number of duplicates as needed
+          const newModel = model.cloneNode(true);
+          const randomX = Math.random() * 10 - 5; // Random position between -5 and 5
+          const randomZ = Math.random() * 10 - 5; // Random position between -5 and 5
+
+          newModel.setAttribute('position', `${randomX} 0 ${randomZ}`);
+          scene.appendChild(newModel);
+        }
+      }
+    });
+  </script>
+</body>
+
+</html>
